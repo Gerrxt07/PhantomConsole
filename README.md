@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🖥️ Phantom Console</h1>
-  <p>Das Offizielle Konsolensystem für die Phantom Community geschrieben in Python.</p>
+  <p>Das Offizielle Konsolensystem für die Phantom Community - Geschrieben in Python.</p>
 
   ![Status](https://img.shields.io/badge/Status-Alpha-red)
   ![Version](https://img.shields.io/github/v/release/Gerrxt07/PhantomConsole?include_prereleases)
