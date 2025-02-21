@@ -139,7 +139,7 @@ def add_user(name: str, password: str, role: str):
         valid, msg = validate_password_strength(password)
         if not valid:
             logger.warning(msg)
-            print(f"{Fore.RED}✖ {msg}{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  {msg}{Style.RESET_ALL}")
             return False
         
         # Hash the password before storing
@@ -152,7 +152,7 @@ def add_user(name: str, password: str, role: str):
         cursor.execute("SELECT COUNT(*) FROM user WHERE name = ?", (name,))
         if cursor.fetchone()[0] > 0:
             logger.warning(f"Username {name} already exists")
-            print(f"{Fore.RED}✖ Username already exists{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Username already exists{Style.RESET_ALL}")
             return False
         
         cursor.execute("INSERT INTO user (name, password_hash, role) VALUES (?, ?, ?)",
@@ -164,7 +164,7 @@ def add_user(name: str, password: str, role: str):
     except sqlite3.Error as e:
         error_msg = f"Database error while adding user {name}: {e}"
         logger.error(error_msg)
-        print(f"{Fore.RED}✖ {error_msg}{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  {error_msg}{Style.RESET_ALL}")
         return False
     finally:
         conn.close()
@@ -184,7 +184,7 @@ def verify_credentials(name: str, password: str) -> str:
         
         # Check if account is locked
         if is_account_locked(name):
-            print(f"{Fore.RED}✖ Account is locked. Please try again later.{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Account is locked. Please try again later.{Style.RESET_ALL}")
             return None
         
         cursor.execute("SELECT password_hash, role, login_attempts FROM user WHERE name = ?", (name,))
@@ -211,10 +211,10 @@ def verify_credentials(name: str, password: str) -> str:
             
             if new_attempts >= config['security']['max_login_attempts']:
                 logger.warning(f"Account {name} locked due to too many failed attempts")
-                print(f"{Fore.RED}✖ Too many failed attempts. Account has been locked.{Style.RESET_ALL}")
+                print(f"{Fore.RED}✖  Too many failed attempts. Account has been locked.{Style.RESET_ALL}")
             else:
                 remaining = config['security']['max_login_attempts'] - new_attempts
-                print(f"{Fore.YELLOW}⚠ {remaining} attempts remaining{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}⚠  {remaining} attempts remaining{Style.RESET_ALL}")
                 
             return ""
             
@@ -276,12 +276,12 @@ def delete_user(name: str) -> bool:
         
         if not result:
             logger.warning(f"User {name} not found")
-            print(f"{Fore.RED}✖ User not found{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  User not found{Style.RESET_ALL}")
             return False
             
         if result[0] == 'root':
             logger.warning(f"Attempted to delete root user {name}")
-            print(f"{Fore.RED}✖ Cannot delete root users{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Cannot delete root users{Style.RESET_ALL}")
             return False
         
         cursor.execute("DELETE FROM user WHERE name = ?", (name,))
@@ -293,7 +293,7 @@ def delete_user(name: str) -> bool:
     except sqlite3.Error as e:
         error_msg = f"Database error while deleting user: {e}"
         logger.error(error_msg)
-        print(f"{Fore.RED}✖ {error_msg}{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  {error_msg}{Style.RESET_ALL}")
         return False
     finally:
         conn.close()
@@ -431,22 +431,22 @@ def upgrade_to_root(name: str) -> bool:
         
         if not result:
             logger.warning(f"User {name} not found")
-            print(f"{Fore.RED}✖ User not found{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  User not found{Style.RESET_ALL}")
             return False
             
         if result[0] == 'root':
             logger.warning(f"User {name} is already root")
-            print(f"{Fore.YELLOW}⚠ User is already root{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}⚠  User is already root{Style.RESET_ALL}")
             return False
         
-        print(f"\n{Fore.YELLOW}⚠ Warning: You are about to upgrade '{name}' to root privileges{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}⚠  Warning: You are about to upgrade '{name}' to root privileges{Style.RESET_ALL}")
         print(f"{Fore.MAGENTA}Please enter the root password to confirm:{Style.RESET_ALL}")
         from PhantomConsole import get_password
         root_password = get_password(f"{Fore.MAGENTA}► Root Password: {Style.RESET_ALL}")
         
         if not verify_root_password(root_password):
             logger.warning("Root password verification failed")
-            print(f"{Fore.RED}✖ Root password verification failed{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Root password verification failed{Style.RESET_ALL}")
             return False
         
         # Update user role to root
@@ -454,13 +454,13 @@ def upgrade_to_root(name: str) -> bool:
         conn.commit()
         
         logger.info(f"Successfully upgraded {name} to root")
-        print(f"{Fore.GREEN}✓ Successfully upgraded user to root{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}✓  Successfully upgraded user to root{Style.RESET_ALL}")
         return True
         
     except sqlite3.Error as e:
         error_msg = f"Database error while upgrading user: {e}"
         logger.error(error_msg)
-        print(f"{Fore.RED}✖ {error_msg}{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  {error_msg}{Style.RESET_ALL}")
         return False
     finally:
         conn.close()
@@ -474,19 +474,19 @@ def handle_password_change(username: str) -> bool:
     print("• At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)")
     
     while True:
-        new_pass = get_password(f"\n{Fore.CYAN}► New Password: {Style.RESET_ALL}")
-        confirm = get_password(f"{Fore.CYAN}► Confirm Password: {Style.RESET_ALL}")
+        new_pass = get_password(f"\n{Fore.CYAN}►  New Password: {Style.RESET_ALL}")
+        confirm = get_password(f"{Fore.CYAN}►  Confirm Password: {Style.RESET_ALL}")
         
         if new_pass != confirm:
-            print(f"{Fore.RED}✖ Passwords do not match{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Passwords do not match{Style.RESET_ALL}")
             continue
             
         valid, msg = validate_password_strength(new_pass)
         if not valid:
-            print(f"{Fore.RED}✖ {msg}{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  {msg}{Style.RESET_ALL}")
             continue
             
         return update_user(username, new_password=new_pass)
 
 def get_new_password() -> str:
-    return get_password(f"{Fore.CYAN}► Enter your new password to login: {Style.RESET_ALL}")
+    return get_password(f"{Fore.CYAN}►  Enter your new password to login: {Style.RESET_ALL}")

@@ -92,7 +92,7 @@ def handle_create_user():
     confirm = get_password(f"{Fore.CYAN}► Confirm Password: {Style.RESET_ALL}")
 
     if password != confirm:
-        print(f"{Fore.RED}✖ Passwords do not match{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Passwords do not match{Style.RESET_ALL}")
         return True
 
     print(f"\nSelect role:")
@@ -106,7 +106,7 @@ def handle_create_user():
     elif role_choice == "2":
         role = "user"
     else:
-        print(f"{Fore.RED}✖ Invalid role choice{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Invalid role choice{Style.RESET_ALL}")
         return True
 
     return scripts.Database.add_user(username, password, role)
@@ -134,29 +134,29 @@ def handle_login():
             confirm = get_password(f"{Fore.CYAN}► Confirm Password: {Style.RESET_ALL}")
             
             if password != confirm:
-                print(f"\n{Fore.RED}✖ Passwords do not match. Please try again.{Style.RESET_ALL}\n")
+                print(f"\n{Fore.RED}✖  Passwords do not match. Please try again.{Style.RESET_ALL}\n")
                 continue
                 
             valid, msg = scripts.Database.validate_password_strength(password)
             if not valid:
-                print(f"\n{Fore.RED}✖ {msg}{Style.RESET_ALL}\n")
+                print(f"\n{Fore.RED}✖  {msg}{Style.RESET_ALL}\n")
                 continue
             
             if scripts.Database.add_user(username, password, "root"):
-                print(f"\n{Fore.GREEN}✓ Root account created successfully!{Style.RESET_ALL}")
+                print(f"\n{Fore.GREEN}✓  Root account created successfully!{Style.RESET_ALL}")
                 current_user = username
                 current_session.create(username)
                 return True
             else:
-                print(f"\n{Fore.RED}✖ Failed to create root account. Please try again.{Style.RESET_ALL}\n")
+                print(f"\n{Fore.RED}✖  Failed to create root account. Please try again.{Style.RESET_ALL}\n")
     
     # Regular login process
     print(f"\n┌─ {Fore.CYAN}Login {Fore.WHITE}──────────────────────────┐")
     print(f"│ Please enter your credentials    │")
     print(f"└──────────────────────────────────┘{Style.RESET_ALL}\n")
     
-    username = command_handler.get_input(f"{Fore.CYAN}► Username: {Style.RESET_ALL}")
-    password = get_password(f"\n{Fore.CYAN}► Password: {Style.RESET_ALL}")
+    username = command_handler.get_input(f"{Fore.CYAN}►  Username: {Style.RESET_ALL}")
+    password = get_password(f"\n{Fore.CYAN}►  Password: {Style.RESET_ALL}")
     
     role = scripts.Database.verify_credentials(username, password)
     
@@ -168,18 +168,18 @@ def handle_login():
     else:
         if role is None:  # Account might be locked
             return True
-        print(f"{Fore.RED}✖ Invalid username or password{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Invalid username or password{Style.RESET_ALL}")
         return True
 
 def handle_update_user(target_user):
     user_role = scripts.Database.get_user_role(target_user)
     
     if not user_role:
-        print(f"{Fore.RED}✖ User {target_user} not found{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  User {target_user} not found{Style.RESET_ALL}")
         return True
         
     if user_role == "root" and target_user == "root":
-        print(f"{Fore.RED}✖ Cannot modify the primary root user{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Cannot modify the primary root user{Style.RESET_ALL}")
         return True
 
     while True:
@@ -190,10 +190,10 @@ def handle_update_user(target_user):
         print(f"│ 4. Exit                         │")
         print(f"└──────────────────────────────────┘{Style.RESET_ALL}")
         
-        choice = command_handler.get_input(f"{Fore.CYAN}► Choice (1-4): {Style.RESET_ALL}")
+        choice = command_handler.get_input(f"{Fore.CYAN}►  Choice (1-4): {Style.RESET_ALL}")
         
         if choice == "1":
-            new_name = command_handler.get_input(f"{Fore.CYAN}► New Username: {Style.RESET_ALL}")
+            new_name = command_handler.get_input(f"{Fore.CYAN}►  New Username: {Style.RESET_ALL}")
             return scripts.Database.update_user(target_user, new_name=new_name)
         elif choice == "2":
             print(f"\n{Fore.YELLOW}Password Requirements:{Style.RESET_ALL}")
@@ -203,11 +203,11 @@ def handle_update_user(target_user):
             print("• At least one number")
             print("• At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)")
             
-            new_pass = get_password(f"\n{Fore.CYAN}► New Password: {Style.RESET_ALL}")
-            confirm = get_password(f"{Fore.CYAN}► Confirm Password: {Style.RESET_ALL}")
+            new_pass = get_password(f"\n{Fore.CYAN}►  New Password: {Style.RESET_ALL}")
+            confirm = get_password(f"{Fore.CYAN}►  Confirm Password: {Style.RESET_ALL}")
             
             if new_pass != confirm:
-                print(f"{Fore.RED}✖ Passwords do not match{Style.RESET_ALL}")
+                print(f"{Fore.RED}✖  Passwords do not match{Style.RESET_ALL}")
                 continue
                 
             return scripts.Database.update_user(target_user, new_password=new_pass)
@@ -215,7 +215,7 @@ def handle_update_user(target_user):
             print("\nSelect new role:")
             print("1. Admin")
             print("2. User")
-            role_choice = command_handler.get_input(f"{Fore.CYAN}► Choice (1-2): {Style.RESET_ALL}")
+            role_choice = command_handler.get_input(f"{Fore.CYAN}►  Choice (1-2): {Style.RESET_ALL}")
             
             new_role = ""
             if role_choice == "1":
@@ -223,14 +223,14 @@ def handle_update_user(target_user):
             elif role_choice == "2":
                 new_role = "user"
             else:
-                print(f"{Fore.RED}✖ Invalid role choice{Style.RESET_ALL}")
+                print(f"{Fore.RED}✖  Invalid role choice{Style.RESET_ALL}")
                 continue
                 
             return scripts.Database.update_user(target_user, new_role=new_role)
         elif choice == "4":
             return True
         else:
-            print(f"{Fore.RED}✖ Invalid choice{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Invalid choice{Style.RESET_ALL}")
 
 def handle_user_command(args):
     """Handle user management commands"""
@@ -260,32 +260,32 @@ def handle_user_command(args):
     
     if subcommand == "create":
         if user_role != 'root':
-            print(f"{Fore.RED}✖ Access denied. Root privileges required.{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Access denied. Root privileges required.{Style.RESET_ALL}")
             return True
         return handle_create_user()
     
     elif subcommand == "delete":
         if user_role != 'root':
-            print(f"{Fore.RED}✖ Access denied. Root privileges required.{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Access denied. Root privileges required.{Style.RESET_ALL}")
             return True
             
         if len(args) != 2:
-            print(f"{Fore.RED}✖ Usage: user delete <username>{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Usage: user delete <username>{Style.RESET_ALL}")
             return True
             
         username = args[1]
         if username == current_user:
-            print(f"{Fore.RED}✖ Cannot delete your own account{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Cannot delete your own account{Style.RESET_ALL}")
             return True
             
-        print(f"\n{Fore.YELLOW}⚠ Warning: You are about to delete user '{username}'{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}⚠  Warning: You are about to delete user '{username}'{Style.RESET_ALL}")
         confirm = command_handler.get_input("Are you sure? (y/N): ").lower()
         if confirm != 'y':
             print(f"{Fore.YELLOW}Operation cancelled{Style.RESET_ALL}")
             return True
             
         if scripts.Database.delete_user(username):
-            print(f"{Fore.GREEN}✓ User deleted successfully{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}✓  User deleted successfully{Style.RESET_ALL}")
         return True
     
     elif subcommand == "list":
@@ -306,36 +306,36 @@ def handle_user_command(args):
     
     elif subcommand == "update":
         if user_role != 'root':
-            print(f"{Fore.RED}✖ Access denied. Root privileges required.{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Access denied. Root privileges required.{Style.RESET_ALL}")
             return True
             
         if len(args) != 2:
-            print(f"{Fore.RED}✖ Usage: user update <username>{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Usage: user update <username>{Style.RESET_ALL}")
             return True
             
         return handle_update_user(args[1])
     
     elif subcommand == "upgrade":
         if user_role != 'root':
-            print(f"{Fore.RED}✖ Access denied. Root privileges required.{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Access denied. Root privileges required.{Style.RESET_ALL}")
             return True
             
         if len(args) != 2:
-            print(f"{Fore.RED}✖ Usage: user upgrade <username>{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Usage: user upgrade <username>{Style.RESET_ALL}")
             return True
             
         username = args[1]
-        print(f"\n{Fore.YELLOW}⚠ Warning: You are about to upgrade '{username}' to root privileges{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}⚠  Warning: You are about to upgrade '{username}' to root privileges{Style.RESET_ALL}")
         root_password = get_password("Please enter the root password to confirm:\n► Root Password: ")
         
         if scripts.Database.verify_root_password(root_password):
             scripts.Database.upgrade_to_root(username)
         else:
-            print(f"{Fore.RED}✖ Invalid root password{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Invalid root password{Style.RESET_ALL}")
         return True
     
     else:
-        print(f"{Fore.RED}✖ Unknown subcommand: {subcommand}{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Unknown subcommand: {subcommand}{Style.RESET_ALL}")
         return True
 
 def print_user_help():
@@ -468,14 +468,14 @@ def handle_command(command: str) -> bool:
         elif cmd == "exit":
             return False
         else:
-            print(f"{Fore.RED}✖ Unknown command: {cmd}{Style.RESET_ALL}")
+            print(f"{Fore.RED}✖  Unknown command: {cmd}{Style.RESET_ALL}")
             command_handler.print_help(current_user)
             
         return True
         
     except Exception as e:
         logger.error(f"Command error: {e}")
-        print(f"{Fore.RED}✖ Error executing command: {e}{Style.RESET_ALL}")
+        print(f"{Fore.RED}✖  Error executing command: {e}{Style.RESET_ALL}")
         return True
 
 if __name__ == "__main__":
