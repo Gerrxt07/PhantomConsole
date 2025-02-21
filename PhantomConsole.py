@@ -3,6 +3,7 @@ import scripts.Database
 from colorama import init, Style, Fore
 import msvcrt
 import os
+from scripts.logging import logger
 init(autoreset=True)
 
 def get_password(prompt):
@@ -37,10 +38,12 @@ def handle_login():
             confirm_password = get_password(f"{Fore.CYAN}► Confirm password: {Style.RESET_ALL}")
             
             if password != confirm_password:
+                logger.warning("Password confirmation failed during root account creation")
                 print(f"\n{Fore.RED}✖ Passwords do not match. Please try again.{Style.RESET_ALL}\n")
                 continue
             
             scripts.Database.add_user(username, password, "root")
+            logger.info(f"Root account created for user: {username}")
             print(f"\n{Fore.GREEN}✓ Root account created successfully!{Style.RESET_ALL}\n")
             return username
     
@@ -50,9 +53,11 @@ def handle_login():
         
         role = scripts.Database.verify_credentials(username, password)
         if role:
+            logger.info(f"User {username} logged in successfully")
             print(f"\n{Fore.GREEN}✓ Authentication successful!{Style.RESET_ALL}")
             return username
         else:
+            logger.warning(f"Failed login attempt for user: {username}")
             print(f"\n{Fore.RED}✖ Invalid credentials. Please try again.{Style.RESET_ALL}\n")
 
 def clear_screen():
@@ -60,11 +65,14 @@ def clear_screen():
 
 def handle_command(command):
     if command.lower() == "exit":
+        logger.info("User requested exit")
         return False
     elif command.lower() in ["clear", "cls"]:
+        logger.debug("Clearing screen")
         clear_screen()
         return True
     elif command.lower() == "help":
+        logger.debug("Showing help menu")
         print(f"\n┌─ {Fore.CYAN}Available Commands {Fore.WHITE}───────────────────┐")
         print(f"│ clear, cls  - Clear the console        │")
         print(f"│ help        - Show this help message   │")
@@ -73,32 +81,35 @@ def handle_command(command):
         return True
     else:
         # Add your command handling logic here
-        # For now, we'll just echo the command
+        logger.info(f"Executing command: {command}")
         print(f"{Fore.YELLOW}► Executing: {command}{Style.RESET_ALL}")
         return True
 
 def main():
+    logger.info("Starting Phantom Console")
     scripts.Startup.start()
-    clear_screen()
     
     username = handle_login()
     clear_screen()
+    logger.info(f"Starting command loop for user: {username}")
     
     while True:
         try:
             prompt = f"{Fore.GREEN}{username}@Phantom{Fore.CYAN}~{Fore.WHITE}$ {Style.RESET_ALL}"
-            
             command = input(prompt).strip()
             
             if not command:
                 continue
             
             if not handle_command(command):
+                logger.info("Shutting down Phantom Console")
                 break
             
         except KeyboardInterrupt:
+            logger.warning("KeyboardInterrupt received")
             print(f"\n{Fore.YELLOW}► Use 'exit' to quit Phantom Console{Style.RESET_ALL}")
         except Exception as e:
+            logger.error(f"Unexpected error: {str(e)}")
             print(f"\n{Fore.RED}✖ Error: {str(e)}{Style.RESET_ALL}")
 
 if __name__ == "__main__":
