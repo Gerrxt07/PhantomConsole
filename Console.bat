@@ -7,5 +7,3 @@ CLS
 TITLE Phantom Console
 
 python PhantomConsole.py
-
-PAUSE
