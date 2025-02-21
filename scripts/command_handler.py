@@ -11,7 +11,8 @@ class CommandHandler:
             'help': 'Show this help message',
             'user': 'Open the user management',
             'logout': 'Log out current user',
-            'exit': 'Exit Phantom Console'
+            'exit': 'Exit Phantom Console',
+            'info': 'Show informations'
         }
         self.command_history: List[str] = []
         self.history_file = os.path.join(os.getenv('APPDATA'), 'PhantomConsole', 'command_history.txt')

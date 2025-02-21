@@ -17,6 +17,16 @@ def get_db_connection():
     return sqlite3.connect(database)
 
 def validate_password_strength(password: str) -> tuple[bool, str]:
+    # Check for common weak passwords
+    common_passwords = {
+        "password", "12345678", "123456789", "qwerty", "admin", 
+        "letmein", "welcome", "monkey", "football", "abc123",
+        "111111", "123123", "dragon", "baseball", "sunshine",
+        "master", "login", "admin123", "qwerty123", "password1", "root", "passwort"
+    }
+    if password.lower() in common_passwords:
+        return False, "Password is too common. Please choose a more unique password"
+        
     if len(password) < 8:
         return False, "Password must be at least 8 characters long"
     if not any(c.isupper() for c in password):
@@ -378,14 +388,22 @@ def update_user(name: str, new_name: str = None, new_password: str = None, new_r
     finally:
         conn.close()
 
-def list_users():
+def list_users(current_user=None):
     logger.info("Listing all users")
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT name, role FROM user ORDER BY role DESC, name ASC")
         users = cursor.fetchall()
-        return users
+        
+        # Format and print users with current user highlighted in green
+        formatted_users = []
+        for name, role in users:
+            if name == current_user:
+                formatted_users.append((f"{Fore.GREEN}{name}{Style.RESET_ALL}", role))
+            else:
+                formatted_users.append((name, role))
+        return formatted_users
     except sqlite3.Error as e:
         error_msg = f"Database error while listing users: {e}"
         logger.error(error_msg)

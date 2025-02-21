@@ -289,16 +289,20 @@ def handle_user_command(args):
         return True
     
     elif subcommand == "list":
-        users = scripts.Database.list_users()
+        users = scripts.Database.list_users(current_user)
         if users:
             print(f"\n┌─ {Fore.CYAN}User List {Fore.WHITE}────────────────┐")
             for user, role in users:
+                # Calculate the actual visible length of the username (excluding ANSI codes)
+                visible_length = len(user) - (len(Fore.GREEN) + len(Style.RESET_ALL)) if Fore.GREEN in user else len(user)
+                padding = ' ' * (15 - visible_length)  # Adjust padding based on visible length
+                
                 role_color = {
                     'root': Fore.RED,
                     'admin': Fore.YELLOW,
                     'user': Fore.GREEN
                 }.get(role, Fore.WHITE)
-                print(f"│ {user:15} | {role_color}{role:8}{Style.RESET_ALL} │")
+                print(f"│ {user}{padding} | {role_color}{role:8}{Style.RESET_ALL} │")
             print(f"└────────────────────────────┘{Style.RESET_ALL}\n")
         else:
             print(f"{Fore.YELLOW}No users found{Style.RESET_ALL}")
@@ -407,6 +411,15 @@ def print_dev_warning():
 def clear_screen():
     os.system('cls')
 
+def print_info():
+    """Print information about Phantom Console"""
+    version = scripts.Database.config['Version']
+    print(f"\n┌─ {Fore.CYAN}About Phantom Console {Fore.WHITE}─────────────┐")
+    print(f"│ Version: {Fore.GREEN}{version}{Style.RESET_ALL}{' ' * (27 - len(version))}│")
+    print(f"│ Created by: {Fore.YELLOW}Gerrxt{Style.RESET_ALL}{' ' * 18}│")
+    print(f"│ GitHub: {Fore.MAGENTA}https://github.com/gerrxt07{Style.RESET_ALL} │")
+    print(f"└─────────────────────────────────────┘{Style.RESET_ALL}\n")
+
 def main():
     global current_user
     
@@ -467,6 +480,8 @@ def handle_command(command: str) -> bool:
             return handle_logout()
         elif cmd == "exit":
             return False
+        elif cmd == "info":
+            print_info()
         else:
             print(f"{Fore.RED}✖  Unknown command: {cmd}{Style.RESET_ALL}")
             command_handler.print_help(current_user)
