@@ -2,6 +2,7 @@ import os
 import datetime
 from pathlib import Path
 from colorama import init, Fore, Style
+import logging
 
 init(autoreset=True)
 
@@ -70,6 +71,28 @@ class Logger:
     
     def debug(self, message: str, print_to_console: bool = False):
         self.log("DEBUG", message, print_to_console)
+
+def setup_logger():
+    logger = logging.getLogger('PhantomConsole')
+    logger.setLevel(logging.DEBUG)
+
+    # Create logs directory if it doesn't exist
+    log_dir = os.path.join(os.getenv('APPDATA'), 'PhantomConsole', 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Create file handler
+    log_file = os.path.join(log_dir, f'phantom_console_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+
+    # Create formatters and add it to the handlers
+    file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(file_formatter)
+
+    # Add the handlers to the logger
+    logger.addHandler(file_handler)
+
+    return logger
 
 # Create a global logger instance
 logger = Logger()

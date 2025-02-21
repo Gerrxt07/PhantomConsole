@@ -22,7 +22,7 @@ def startup():
     # Commit changes and close connection
     conn.commit()
     conn.close()
-    logger.success("Database initialized successfully")
+    logger.info("Database initialized successfully")
 
 def hash_password(password: str) -> str:
     # Generate a salt and hash the password
@@ -53,7 +53,7 @@ def add_user(name: str, password: str, role: str):
                       (name, password_hash, role))
         
         conn.commit()
-        logger.success(f"User {name} added successfully")
+        logger.info(f"User {name} added successfully")
         return True
     except sqlite3.Error as e:
         error_msg = f"Database error while adding user {name}: {e}"
@@ -141,8 +141,8 @@ def delete_user(name: str):
         conn.commit()
         
         msg = f"User {name} deleted successfully"
-        logger.success(msg)
-        print(f"{Fore.GREEN}{msg}{Style.RESET_ALL}")
+        logger.info(msg)
+        print(f"{Fore.GREEN}{msg}{Style.RESET_ALL}\n")
         return True
         
     except sqlite3.Error as e:
@@ -152,3 +152,95 @@ def delete_user(name: str):
         return False
     finally:
         conn.close()
+
+def update_user(name: str, new_name: str = None, new_password: str = None, new_role: str = None):
+    logger.info(f"Attempting to update user: {name}")
+    try:
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
+        
+        # Check if user exists and get current role
+        cursor.execute("SELECT role FROM user WHERE name = ?", (name,))
+        result = cursor.fetchone()
+        
+        if not result:
+            msg = f"User {name} not found"
+            logger.warning(msg)
+            print(f"{Fore.RED}{msg}{Style.RESET_ALL}")
+            return False
+            
+        current_role = result[0]
+        
+        # Prevent modifying root users
+        if current_role == 'root' and (new_role or new_name):
+            msg = "Cannot modify root user's name or role"
+            logger.warning(msg)
+            print(f"{Fore.RED}{msg}{Style.RESET_ALL}")
+            return False
+        
+        # Build update query dynamically
+        updates = []
+        params = []
+        
+        if new_name:
+            updates.append("name = ?")
+            params.append(new_name)
+            
+        if new_password:
+            updates.append("password_hash = ?")
+            params.append(hash_password(new_password))
+            
+        if new_role:
+            if new_role not in ['admin', 'user']:
+                msg = "Invalid role. Must be 'admin' or 'user'"
+                logger.warning(msg)
+                print(f"{Fore.RED}{msg}{Style.RESET_ALL}")
+                return False
+            updates.append("role = ?")
+            params.append(new_role)
+            
+        if not updates:
+            msg = "No updates specified"
+            logger.warning(msg)
+            print(f"{Fore.YELLOW}{msg}{Style.RESET_ALL}")
+            return False
+            
+        # Add the WHERE clause parameter
+        params.append(name)
+        
+        # Execute update
+        query = f"UPDATE user SET {', '.join(updates)} WHERE name = ?"
+        cursor.execute(query, params)
+        conn.commit()
+        
+        msg = f"User {name} updated successfully"
+        logger.info(msg)
+        print(f"{Fore.GREEN}{msg}{Style.RESET_ALL}\n")
+        return True
+        
+    except sqlite3.Error as e:
+        error_msg = f"Database error while updating user: {e}"
+        logger.error(error_msg)
+        print(f"{Fore.RED}{error_msg}{Style.RESET_ALL}")
+        return False
+    finally:
+        conn.close()
+
+def list_users():
+    logger.info("Listing all users")
+    try:
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, role FROM user ORDER BY role DESC, name ASC")
+        users = cursor.fetchall()
+        return users
+    except sqlite3.Error as e:
+        error_msg = f"Database error while listing users: {e}"
+        logger.error(error_msg)
+        print(f"{Fore.RED}{error_msg}{Style.RESET_ALL}")
+        return None
+    finally:
+        conn.close()
+
+def validate_role(role: str) -> bool:
+    return role.lower() in ['admin', 'user', 'root']
