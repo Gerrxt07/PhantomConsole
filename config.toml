@@ -1,1 +1,17 @@
 Version = "1.0.0-Alpha"
+
+# Development settings
+[dev]
+enabled = false
+username = "dev"
+password = "dev"
+
+# Console settings
+[console]
+session_timeout = 300  # seconds (5 minutes)
+debug = false  # Enable/disable debug messages
+
+# Security settings
+[security]
+max_login_attempts = 3
+lockout_duration = 300  # seconds (5 minutes)
