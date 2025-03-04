@@ -24,19 +24,18 @@ def validate_password_strength(password: str) -> tuple[bool, str]:
         "111111", "123123", "dragon", "baseball", "sunshine",
         "master", "login", "admin123", "qwerty123", "password1", "root", "passwort"
     }
-    if password.lower() in common_passwords:
-        return False, "Password is too common. Please choose a more unique password"
-        
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters long"
-    if not any(c.isupper() for c in password):
-        return False, "Password must contain at least one uppercase letter"
-    if not any(c.islower() for c in password):
-        return False, "Password must contain at least one lowercase letter"
-    if not any(c.isdigit() for c in password):
-        return False, "Password must contain at least one number"
-    if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password):
-        return False, "Password must contain at least one special character"
+    checks = [
+        (lambda p: len(p) >= 8, "Minimum 8 characters"),
+        (lambda p: any(c.isupper() for c in p), "At least one uppercase letter"),
+        (lambda p: any(c.islower() for c in p), "At least one lowercase letter"),
+        (lambda p: any(c.isdigit() for c in p), "At least one number"),
+        (lambda p: any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in p), "Special character required"),
+        (lambda p: p.lower() not in common_passwords, "Password is too common")
+    ]
+    
+    for check, msg in checks:
+        if not check(password):
+            return False, msg
     return True, "Password strength acceptable"
 
 def create_login_tracking_table():
@@ -128,19 +127,17 @@ def startup():
     finally:
         conn.close()
 
+# In hash_password()
 def hash_password(password: str) -> str:
-    """Hash a password using bcrypt"""
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')  # Store as string
+    pepper = config['security']['pepper']
+    salted_password = password + pepper  # Or pepper + password
+    return bcrypt.hashpw(salted_password.encode(), bcrypt.gensalt()).decode()
 
+# In verify_password()
 def verify_password(password: str, stored_hash: str) -> bool:
-    """Verify a password against its hash"""
-    try:
-        return bcrypt.checkpw(password.encode('utf-8'), stored_hash.encode('utf-8'))
-    except Exception as e:
-        logger.error(f"Error verifying password: {e}")
-        return False
+    pepper = config['security']['pepper']
+    salted_password = password + pepper
+    return bcrypt.checkpw(salted_password.encode(), stored_hash.encode())
 
 def add_user(name: str, password: str, role: str):
     logger.info(f"Adding new user: {name} with role: {role}")
