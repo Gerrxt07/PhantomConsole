@@ -3,7 +3,6 @@ from typing import List, Dict, Optional
 import msvcrt
 from colorama import Fore, Style
 import scripts.Database
-import readline
 
 class CommandHandler:
     def __init__(self):
@@ -19,14 +18,6 @@ class CommandHandler:
         self.history_file = os.path.join(os.getenv('APPDATA'), 'PhantomConsole', 'command_history.txt')
         self.history_index = 0
         self._load_history()
-        
-        self.commandlist = ["user", "logout", "exit", "help", "info"]
-        readline.set_completer(self.completer)
-        readline.parse_and_bind("tab: complete")
-
-    def completer(self, text, state):
-        options = [cmd for cmd in self.commandlist if cmd.startswith(text)]
-        return options[state] if state < len(options) else None
 
     def _load_history(self):
         """Load command history from file"""
