@@ -3,12 +3,16 @@ PhantomConsole/
 ├── Console.bat
 ├── PhantomConsole.py
 ├── scripts/
-│   ├── command_handler.py
-│   ├── Database.py
-│   ├── logging.py
-│   ├── session.py
-│   ├── Startup.py
-│   └── Updater.py
+│      ├── command_handler.py
+│      ├── language.py
+│      ├── Database.py
+│      ├── logging.py
+│      ├── session.py
+│      ├── Startup.py
+│      └── Updater.py
 └── resources/
     ├── database.db
+    ├── lang/
+    │      ├── de.json
+    │      └── en.json
     └── requirements.txt
