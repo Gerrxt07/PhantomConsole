@@ -1,4 +1,5 @@
 Version = "1.0.0-Alpha"
+language = "de" # Available: en (English), de (German)
 
 # Development settings
 [dev]
@@ -15,3 +16,4 @@ debug = false  # Enable/disable debug messages
 [security]
 max_login_attempts = 3
 lockout_duration = 300  # seconds (5 minutes)
+pepper = "rKyT8L7BUIJ9gpMb5MWFXO4gcYKVBv09"  # Add this line
