@@ -80,6 +80,8 @@ def handle_create_user():
     print(f"└─────────────────────────────────────┘{Style.RESET_ALL}\n")
 
     username = command_handler.get_input(f"{Fore.CYAN}► Username: {Style.RESET_ALL}")
+    if not username:
+        print(f"{Fore.RED}Username cannot be empty!{Style.RESET_ALL}")
     
     print(f"\n{Fore.YELLOW}Password Requirements:{Style.RESET_ALL}")
     print("• Minimum 8 characters")
@@ -122,6 +124,8 @@ def handle_login():
         
         while True:
             username = command_handler.get_input(f"{Fore.CYAN}► Root Username: {Style.RESET_ALL}")
+            if not username:
+                print(f"{Fore.RED}Username cannot be empty!{Style.RESET_ALL}")
             
             print(f"\n{Fore.YELLOW}Password Requirements:{Style.RESET_ALL}")
             print("• Minimum 8 characters")
@@ -156,6 +160,9 @@ def handle_login():
     print(f"└──────────────────────────────────┘{Style.RESET_ALL}\n")
     
     username = command_handler.get_input(f"{Fore.CYAN}►  Username: {Style.RESET_ALL}")
+    if not username:
+        print(f"{Fore.RED}Username cannot be empty!{Style.RESET_ALL}")
+    
     password = get_password(f"\n{Fore.CYAN}►  Password: {Style.RESET_ALL}")
     
     role = scripts.Database.verify_credentials(username, password)
