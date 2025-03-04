@@ -6,12 +6,12 @@ import zipfile
 import io
 import shutil
 import time
-import requests
 
 # --------------- [ Update Script ] --------------- #
 
 def update():
-    with open('config.toml', mode='r') as config_file:
+    # Use context managers for file operations
+    with open('config.toml', 'r', encoding='utf-8') as config_file:
         config = toml.load(config_file)
 
     version = config['Version']
