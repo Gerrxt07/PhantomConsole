@@ -1,5 +1,4 @@
 Version = "1.0.0-Alpha"
-language = "de" # Available: en (English), de (German)
 
 # Development settings
 [dev]
