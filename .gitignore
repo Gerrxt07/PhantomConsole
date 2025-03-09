@@ -1,1 +1,7 @@
 resources/database.db
+scripts/__pycache__/Updater.cpython-313.pyc
+scripts/__pycache__/Startup.cpython-313.pyc
+scripts/__pycache__/session.cpython-313.pyc
+scripts/__pycache__/logging.cpython-313.pyc
+scripts/__pycache__/command_handler.cpython-313.pyc
+scripts/__pycache__/Database.cpython-313.pyc
