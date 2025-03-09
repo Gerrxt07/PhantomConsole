@@ -79,10 +79,11 @@ def update():
                 # Get the zipball URL from the latest release
                 download_url = latest_release['zipball_url']
                 
-                # Use the same secure request pattern
+                # Modified headers for zipball download
                 headers = {
                     'User-Agent': 'PhantomConsole-Updater',
-                    'Accept': 'application/octet-stream'
+                    # Remove the incorrect Accept header or use the GitHub-specific one
+                    'Accept': 'application/vnd.github.v3.raw'
                 }
                 
                 response = requests.get(
