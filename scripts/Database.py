@@ -113,7 +113,7 @@ def startup():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS user (
             name TEXT PRIMARY KEY,
-            password_hash TEXT NOT NULL,
+            password TEXT NOT NULL,
             role TEXT NOT NULL,
             login_attempts INTEGER DEFAULT 0,
             last_attempt INTEGER
@@ -150,7 +150,7 @@ def add_user(name: str, password: str, role: str):
             return False
         
         # Hash the password before storing
-        password_hash = hash_password(password)
+        password = hash_password(password)
         
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -162,8 +162,8 @@ def add_user(name: str, password: str, role: str):
             print(f"{Fore.RED}✖  Username already exists{Style.RESET_ALL}")
             return False
         
-        cursor.execute("INSERT INTO user (name, password_hash, role) VALUES (?, ?, ?)",
-                      (name, password_hash, role))
+        cursor.execute("INSERT INTO user (name, password, role) VALUES (?, ?, ?)",
+                      (name, password, role))
         
         conn.commit()
         logger.info(f"User {name} added successfully")
@@ -194,7 +194,7 @@ def verify_credentials(name: str, password: str) -> str:
             print(f"{Fore.RED}✖  Account is locked. Please try again later.{Style.RESET_ALL}")
             return None
         
-        cursor.execute("SELECT password_hash, role, login_attempts FROM user WHERE name = ?", (name,))
+        cursor.execute("SELECT password, role, login_attempts FROM user WHERE name = ?", (name,))
         result = cursor.fetchone()
         
         if not result:
@@ -346,7 +346,7 @@ def update_user(name: str, new_name: str = None, new_password: str = None, new_r
                 print(f"{Fore.RED}{msg}{Style.RESET_ALL}")
                 return False
             
-            updates.append("password_hash = ?")
+            updates.append("password = ?")
             params.append(hash_password(new_password))
             
         if new_role:
@@ -418,7 +418,7 @@ def verify_root_password(password: str) -> bool:
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT password_hash FROM user WHERE role = 'root' LIMIT 1")
+        cursor.execute("SELECT password FROM user WHERE role = 'root' LIMIT 1")
         result = cursor.fetchone()
         
         if not result:
